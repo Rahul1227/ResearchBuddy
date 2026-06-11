@@ -1,6 +1,6 @@
 # ResearchBuddy — Multi-Agent AI Research System
 
-ResearchBuddy is an intelligent research automation tool powered by a multi-agent pipeline. It takes any topic as input and automatically searches the web, scrapes key sources, writes a structured research report, and then critically evaluates it — all in one pipeline run.
+ResearchBuddy is an intelligent research automation tool powered by a six-step multi-agent pipeline. Enter any topic and the system automatically searches the web, scrapes and synthesizes sources, writes a structured long-form report, critically reviews it, extracts key entities and statistics, and suggests follow-up research directions — all in one run.
 
 Built with **LangChain**, **Google Gemini (gemini-2.5-flash)**, **Tavily Search**, and **Streamlit**.
 
@@ -8,33 +8,44 @@ Built with **LangChain**, **Google Gemini (gemini-2.5-flash)**, **Tavily Search*
 
 ## How It Works
 
-The pipeline runs four specialized agents in sequence:
+Six specialized agents run in sequence, each building on the work of the previous step:
 
 ```
 [Your Topic]
      ↓
-[1] Search Agent     → Queries the web using Tavily and returns top results
+[01] Search Agent      → Queries the web via Tavily and summarizes top results
      ↓
-[2] Reader Agent     → Picks the best URL and deep-scrapes its content
+[02] Reader Analyst    → Scrapes all sources and synthesizes a structured briefing
      ↓
-[3] Writer Chain     → Combines all data and writes a structured markdown report
+[03] Writer Chain      → Writes a long-form, evidence-based markdown report
      ↓
-[4] Critic Chain     → Reviews the report and gives a quality score + feedback
+[04] Critic Chain      → Reviews the report and gives a quality score (X/10)
      ↓
-[Final Report + Feedback]
+[05] Entity Extractor  → Maps people, orgs, technologies, stats, dates & places
+     ↓
+[06] Topic Suggester   → Generates six follow-up research directions
+     ↓
+[Final Report + Analysis + Sources + Citations + Related Topics]
 ```
 
 ---
 
 ## Features
 
-- Automated web search via **Tavily API**
-- Intelligent URL selection and **web scraping** with BeautifulSoup
-- Structured **research report** generation (Introduction, Key Findings, Conclusion, Sources)
-- Built-in **AI critic** that scores and reviews the report (X/10)
-- Clean **Streamlit web UI** with step-by-step progress tracking
-- **CLI mode** for programmatic or scripted usage
-- One-click **markdown download** of the final report
+- Automated web search via **Tavily API** with advanced search depth
+- Full **multi-source scraping** using BeautifulSoup — cleans navigation, ads, and footers
+- **Reader Analyst** synthesizes all sources into a structured research briefing before writing
+- Configurable **report length**: Standard (~1200 words), Detailed (~1800), Deep Dive (~2600)
+- Optional **comparison table** and up to 8 selectable **focus areas** (market impact, risks, ethics, etc.)
+- Built-in **AI critic** that scores and reviews every report out of 10
+- **Entity extraction** across six categories: people, organizations, technologies, statistics, dates, and places
+- **Key statistics** panel extracted from the report
+- Six **clickable follow-up topics** that instantly start a new research session
+- Dark space-themed **Streamlit UI** with real-time step-by-step pipeline progress
+- **Research history sidebar** — stores up to 20 previous sessions, each reloadable without re-running
+- **Five results tabs**: Report, Analysis, Sources, Citations, Related Topics
+- One-click download of the report as a **markdown file** or **styled HTML file**
+- Full **CLI mode** for scripted or terminal usage
 
 ---
 
@@ -42,12 +53,20 @@ The pipeline runs four specialized agents in sequence:
 
 ```
 ResearchBuddy/
-├── app.py              # Streamlit web UI
-├── pipeline.py         # CLI pipeline runner
-├── agents.py           # All agent and chain definitions
-├── tools.py            # web_search and scrape_url tools
-├── requirements.txt    # Python dependencies
-├── .env                # API keys 
+├── core/
+│   ├── agents.py              # All LLM chains and agents (search, reader, writer, critic, entities, topics)
+│   ├── config.py              # Settings and environment variable loading
+│   ├── models.py              # Pydantic data models (PipelineResult, ResearchOptions, SourceDocument)
+│   └── pipeline.py            # Step-by-step and full pipeline orchestration
+├── services/
+│   └── research_tools.py      # Tavily web search + BeautifulSoup scraping helpers
+├── ui/
+│   ├── app.py                 # Streamlit app composition and session state management
+│   ├── components.py          # Reusable UI blocks (score circle, source cards, entity tags, etc.)
+│   └── styles.py              # CSS styling (dark theme with orange accents)
+├── generate_report.py         # Generates the formal project report PDF (reportlab)
+├── requirements.txt
+├── .env
 └── .gitignore
 ```
 
@@ -106,33 +125,45 @@ TAVILY_API_KEY=your_tavily_api_key_here
 ### Option A — Streamlit Web UI (recommended)
 
 ```bash
-streamlit run app.py
+streamlit run ui/app.py
 ```
 
 Then open your browser at `http://localhost:8501`.
 
-1. Type a research topic in the input box
-2. Click **Run Research Pipeline**
-3. Watch each stage complete in real time
-4. Read the final report and critic feedback
-5. Download the report as a `.md` file
+1. Type a research topic — or click one of the **Try an Example** buttons
+2. Optionally expand **Advanced Research Settings** to tune the report
+3. Click **Run Research Pipeline** and watch each stage complete in real time
+4. Browse results across the Report, Analysis, Sources, Citations, and Related Topics tabs
+5. Download the report as `.md` or `.html`, or click a related topic to start a new run
 
 ### Option B — Command Line
 
 ```bash
-python pipeline.py
+python -m core.pipeline
 ```
 
 You will be prompted to enter a topic. The pipeline runs and prints all outputs to the terminal.
 
 ---
 
+## Advanced Settings
+
+| Setting | Options | What It Controls |
+|---|---|---|
+| Report Length | Standard / Detailed / Deep Dive | Target word count (~1200 / ~1800 / ~2600) |
+| Sources to Analyse | 3–8 | Number of web sources to scrape and analyze |
+| Content Extract Per Source | 3000–10000 chars | How much text to read from each page |
+| Comparison Table | On / Off | Whether to include a summary table in the report |
+| Focus Areas | 8 selectable options | Which angles to emphasize (risks, market, ethics, etc.) |
+
+---
+
 ## Example Topics
 
-- `"Latest advancements in quantum computing"`
-- `"Impact of artificial intelligence on healthcare"`
-- `"Climate change and renewable energy solutions"`
-- `"History and future of space exploration"`
+- `"LLM agents 2025"`
+- `"CRISPR gene editing"`
+- `"Fusion energy progress"`
+- `"Quantum computing breakthroughs"`
 
 ---
 
@@ -144,6 +175,7 @@ You will be prompted to enter a topic. The pipeline runs and prints all outputs 
 | Agent Framework | LangChain |
 | Web Search | Tavily API |
 | Web Scraping | BeautifulSoup4 + requests |
+| Data Validation | Pydantic |
 | UI | Streamlit |
 | Env Management | python-dotenv |
 
@@ -151,6 +183,8 @@ You will be prompted to enter a topic. The pipeline runs and prints all outputs 
 
 ## Notes
 
-- The system uses `temperature=0` for deterministic, factual outputs.
-- Web scraping is limited to 3000 characters of clean text per URL to keep context concise.
-- Search results are capped at 5 results to balance coverage and speed.
+- All agents use `temperature=0` to `temperature=0.4` depending on the task — lower for precision (entity extraction), higher for creativity (topic suggestions).
+- The pipeline synthesizes multiple scraped sources before writing the final report, rather than relying on a single URL.
+- Web scraping is limited to a configurable character budget per source to keep context concise.
+- All pipeline steps are wrapped in safe error handling — a single failed step produces a fallback message and does not crash the run.
+- The Tavily search function uses automatic retry with exponential backoff to handle transient API errors.
