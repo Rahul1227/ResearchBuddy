@@ -96,10 +96,10 @@ def _render_header() -> None:
             <h1>Research<span>Buddy</span></h1>
             <p class="hero-sub">
                 A multi-agent pipeline that searches, synthesises, writes, critiques,
-                and extracts deep insights — powered by Gemini and Tavily.
+                and extracts deep insights — powered by Mistral and Tavily.
             </p>
             <div class="hero-badges">
-                <span class="hero-badge">Gemini 2.5 Flash</span>
+                <span class="hero-badge">Mistral Medium 3.5</span>
                 <span class="hero-badge">Tavily Search</span>
                 <span class="hero-badge">6-Agent Pipeline</span>
                 <span class="hero-badge">Entity Extraction</span>

@@ -3,17 +3,22 @@ from __future__ import annotations
 from langchain.agents import create_agent
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 
 from core.config import settings
 from services.research_tools import scrape_url, web_search
 
+_NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1"
 
-def get_llm(temperature: float = 0.2) -> ChatGoogleGenerativeAI:
-    return ChatGoogleGenerativeAI(
+
+def get_llm(temperature: float = 0.2) -> ChatOpenAI:
+    return ChatOpenAI(
         model=settings.model_name,
-        google_api_key=settings.google_api_key,
+        api_key=settings.nvidia_api_key,
+        base_url=_NVIDIA_BASE_URL,
         temperature=temperature,
+        max_tokens=16384,
+        model_kwargs={"top_p": 1.0, "reasoning_effort": "high"},
     )
 
 

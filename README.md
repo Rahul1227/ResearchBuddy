@@ -2,7 +2,7 @@
 
 ResearchBuddy is an intelligent research automation tool powered by a six-step multi-agent pipeline. Enter any topic and the system automatically searches the web, scrapes and synthesizes sources, writes a structured long-form report, critically reviews it, extracts key entities and statistics, and suggests follow-up research directions — all in one run.
 
-Built with **LangChain**, **Google Gemini (gemini-2.5-flash)**, **Tavily Search**, and **Streamlit**.
+Built with **LangChain**, **Mistral Medium 3.5 (via NVIDIA NIM)**, **Tavily Search**, and **Streamlit**.
 
 ---
 
@@ -75,7 +75,7 @@ ResearchBuddy/
 ## Prerequisites
 
 - Python 3.10 or higher
-- A **Google AI API key** (for Gemini) — get one at [aistudio.google.com](https://aistudio.google.com)
+- An **NVIDIA API key** (for NVIDIA NIM / Mistral) — get one at [build.nvidia.com](https://build.nvidia.com)
 - A **Tavily API key** (for web search) — get one at [tavily.com](https://tavily.com)
 
 ---
@@ -112,7 +112,7 @@ pip install -r requirements.txt
 Create a `.env` file in the project root:
 
 ```
-GOOGLE_API_KEY=your_google_api_key_here
+NVIDIA_API_KEY=your_nvidia_api_key_here
 TAVILY_API_KEY=your_tavily_api_key_here
 ```
 
@@ -171,7 +171,7 @@ You will be prompted to enter a topic. The pipeline runs and prints all outputs 
 
 | Layer | Technology |
 |---|---|
-| LLM | Google Gemini `gemini-2.5-flash` |
+| LLM | Mistral Medium 3.5 `mistralai/mistral-medium-3.5-128b` (NVIDIA NIM) |
 | Agent Framework | LangChain |
 | Web Search | Tavily API |
 | Web Scraping | BeautifulSoup4 + requests |
